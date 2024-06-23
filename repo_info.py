@@ -1,9 +1,13 @@
 import httpx
+from datetime import timedelta
 from prefect import flow, task
+from prefect.tasks import task_input_hash
 from typing import Optional
 
 
-@task
+@task(cache_key_fn=task_input_hash, 
+      cache_expiration=timedelta(hours=1),
+      )
 def get_url(url: str, params: Optional[dict[str, any]] = None):
     response = httpx.get(url, params=params)
     response.raise_for_status()
